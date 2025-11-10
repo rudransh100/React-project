@@ -1,0 +1,32 @@
+{
+  "name": "react-project",
+  "version": "1.0.0",
+  "description": "react project",
+  "homepage": "https://github.com/rudransh100/React-project#readme",
+  "bugs": {
+    "url": "https://github.com/rudransh100/React-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rudransh100/React-project.git"
+  },
+  "license": "ISC",
+  "author": "Rudransh",
+  "type": "commonjs",
+  
+  "scripts": {
+    "start":"parcel index.html",
+    "build":"parcel index.html",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "parcel": "^2.16.1"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "browserslist":[
+    "last 2 version"
+  ]
+}
