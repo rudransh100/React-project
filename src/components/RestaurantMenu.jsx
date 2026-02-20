@@ -1,26 +1,34 @@
-import {useState, useEffect} from "react";
 import Shimmer from "./Shimmer";
+import { useParams } from "react-router-dom";
+import restaurantsMenu from "../utils/menu.js";
+console.log(restaurantsMenu);
 
 const RestaurantMenu = () => {
-    const [resInfo, setresInfo] = useState(null);
+  const { id } = useParams();
 
-    useEffect(() => {
-        fetchMenu();
-    }, []);
-    const fetchMenu = async () => {
-        const data = await fetch("https://private-anon-f7b43873f8-pizzaapp.apiary-mock.com/restaurants/restaurantId/menu");
-        const json = await data.json();
-        console.log(json);
-    };
+  const restaurant = restaurantsMenu.find(
+    (res) => res.restaurantID === Number(id)
+  );
 
-    return ( 
+  if (!restaurant) return <Shimmer />;
 
-        <div className="menu">
-            <h2>res name</h2>
-            <ul>
-                <li>cuiseine</li>
-            </ul>
+  return (
+    <div className="menu">
+      <h1>{restaurant?.restaurantName}</h1>
+
+      {restaurant?.menu?.map((category) => (
+        <div key={category.category}>
+          <h2>{category.category}</h2>
+
+          {category.items.map((item) => (
+            <p key={item.id}>
+              {item.name} - ₹{item.price}
+            </p>
+          ))}
         </div>
-    );
+      ))}
+    </div>
+  );
 };
+
 export default RestaurantMenu;
