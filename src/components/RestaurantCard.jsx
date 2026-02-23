@@ -25,8 +25,9 @@ const RestaurantCard = (props) => {
             <h4>{address}</h4> 
             <h4>{deliveryTime}</h4>
             <h4>
+            {rating}
             <i className="ri-star-fill" style={{ color: "gold", marginRight: "5px" }}></i>
-             {rating}stars
+            
             </h4>
         </div>
     );
