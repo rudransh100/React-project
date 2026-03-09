@@ -1,4 +1,7 @@
 import {FaUsers, FaBullseye, FaAward, FaHeart} from "react-icons/fa";
+
+import Footer from "./Footer";
+
 const About = () => {
     return (
         <div className="about-page">
@@ -74,6 +77,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </div>
     );
 };

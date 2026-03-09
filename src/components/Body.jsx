@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Shimmer from "./Shimmer";
 import resList from "../utils/mockdata";
 import { Link } from "react-router-dom";
+import Footer from "./Footer";
 const Body = () => {
   const [ListofRestaurant, setListofRestaurant] = useState(resList);
   const [filteredRestaurant, setfilteredRestaurant] = useState(resList);
@@ -78,6 +79,9 @@ const Body = () => {
             <RestaurantCard resData={resturant} />
           </Link>
         ))}
+      </div>
+      <div className="footer">
+        <Footer/>
       </div>
     </div>
   );
