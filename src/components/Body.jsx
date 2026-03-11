@@ -1,9 +1,9 @@
 import RestaurantCard from "./RestaurantCard";
 import { useState, useEffect } from "react";
-import Shimmer from "./Shimmer";
-import resList from "../utils/mockdata";
+import resList from "../utils/mockdata.js";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
+
 const Body = () => {
   const [ListofRestaurant, setListofRestaurant] = useState(resList);
   const [filteredRestaurant, setfilteredRestaurant] = useState(resList);
@@ -32,19 +32,29 @@ const Body = () => {
     <Shimmer />
   ) : (
     <div className="body">
+      <div className="brand-text">
+        <div className="banner">
+          <h1>Craving something delicious?</h1>
+          <h3>
+            Order from your favorite restaurants and get it delivered fast
+          </h3>
+        </div>
+      </div>
       <div className="filter">
         <div className="search">
           <input
             type="text"
             className="search-box"
+            placeholder="Search for restaurants, cuisines or dishes..."
             value={SearchText}
             onChange={(e) => {
               setSearchText(e.target.value);
             }}
           />
+
           <button
+            className="search-btn"
             onClick={() => {
-              //filter the restuarants cards from search text
               const filteredRestaurant = ListofRestaurant.filter((res) =>
                 res.restaurantName
                   .toLowerCase()
@@ -53,7 +63,7 @@ const Body = () => {
               setfilteredRestaurant(filteredRestaurant);
             }}
           >
-            search
+            🔍
           </button>
         </div>
         <button
@@ -80,9 +90,8 @@ const Body = () => {
           </Link>
         ))}
       </div>
-      <div className="footer">
-        <Footer/>
-      </div>
+
+      <Footer />
     </div>
   );
 };

@@ -8,8 +8,11 @@ import Contact from "./components/Contact";
 import Error from "./components/Error";
 import Cart from "./components/Cart";
 import RestaurantMenu from "./components/RestaurantMenu.jsx";
-import { CartProvider } from "./utils/CartContext.js";
-
+import {CartProvider} from "./utils/CartContext.js";
+import Login from "./components/Login";
+import {AuthProvider} from "./utils/AuthContext";
+import Signup from "./components/Signup.jsx";
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 
 const AppLayout = () => {
     return (
@@ -39,11 +42,32 @@ const AppRouter = createBrowserRouter([
             },
             {
                 path: "/restaurant/:id",
-                element: <RestaurantMenu/>,
+                element: (
+                    <ProtectedRoute>
+                        {" "}
+                        <RestaurantMenu />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/login",
+                element: <Login />,
+            },
+            {
+                path: "/signup",
+                element: <Signup />,
             },
             {
                 path: "/cart",
-                element: <Cart />,
+                element: (
+                    <ProtectedRoute>
+                        <Cart />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "/login",
+                element: <Login />,
             },
         ],
         errorElement: <Error />,
@@ -53,7 +77,9 @@ const AppRouter = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root"));
 // root.render(<AppLayout />);
 root.render(
-  <CartProvider>
-    <RouterProvider router={AppRouter} />
-  </CartProvider>
+    <AuthProvider>
+        <CartProvider>
+            <RouterProvider router={AppRouter} />
+        </CartProvider>
+    </AuthProvider>
 );

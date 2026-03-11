@@ -3,17 +3,22 @@ import {useState} from "react";
 import {Link} from "react-router-dom";
 import {useCart} from "../utils/CartContext";
 import {FaShoppingCart, FaUser} from "react-icons/fa";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../utils/AuthContext";
 
 const Heading = () => {
     const [btnNameReact, setbtnNameReact] = useState("Login");
-
+    const navigate = useNavigate();
     const {cart} = useCart();
+    const {user, logout} = useAuth();
     const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
 
     return (
         <div className="header">
             <div className="logo-container">
-                <img className="logo" src={LOGO_URL} />
+                <Link to="/">
+                    <img className="logo" src={LOGO_URL} />
+                </Link>
             </div>
 
             <div className="nav-items">
@@ -44,15 +49,15 @@ const Heading = () => {
                     </li>
 
                     <li>
-                        <button
-                            className="login-btn"
-                            onClick={() =>
-                                btnNameReact === "Login" ? setbtnNameReact("Logout") : setbtnNameReact("Login")
-                            }
-                        >
-                            <FaUser className="user-icon" />
-                            {btnNameReact}
-                        </button>
+                        {user ? (
+                            <button className="login-btn" onClick={logout}>
+                                Logout
+                            </button>
+                        ) : (
+                            <button className="login-btn" onClick={() => navigate("/login")}>
+                                Login
+                            </button>
+                        )}
                     </li>
                 </ul>
             </div>

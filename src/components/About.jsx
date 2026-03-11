@@ -7,7 +7,7 @@ const About = () => {
         <div className="about-page">
             <div className="banner">
                 <h1>ABOUT US</h1>
-                <p>YOUR TRUSTED PARTNER ON DELIVERY SINCE YOUR BIRTH</p>
+                <p>YOUR TRUSTED PARTNER ON DELIVERY SINCE 2020</p>
             </div>
             <div className="story">
                 <div className="story-left">
