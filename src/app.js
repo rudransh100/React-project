@@ -10,9 +10,7 @@ import Cart from "./components/Cart";
 import RestaurantMenu from "./components/RestaurantMenu.jsx";
 import {CartProvider} from "./utils/CartContext.js";
 import Login from "./components/Login";
-import {AuthProvider} from "./utils/AuthContext";
 import Signup from "./components/Signup.jsx";
-import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 
 const AppLayout = () => {
     return (
@@ -42,12 +40,7 @@ const AppRouter = createBrowserRouter([
             },
             {
                 path: "/restaurant/:id",
-                element: (
-                    <ProtectedRoute>
-                        {" "}
-                        <RestaurantMenu />
-                    </ProtectedRoute>
-                ),
+                element: <RestaurantMenu />,
             },
             {
                 path: "/login",
@@ -59,11 +52,7 @@ const AppRouter = createBrowserRouter([
             },
             {
                 path: "/cart",
-                element: (
-                    <ProtectedRoute>
-                        <Cart />
-                    </ProtectedRoute>
-                ),
+                element: <Cart />,
             },
             {
                 path: "/login",
@@ -77,9 +66,7 @@ const AppRouter = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById("root"));
 // root.render(<AppLayout />);
 root.render(
-    <AuthProvider>
-        <CartProvider>
-            <RouterProvider router={AppRouter} />
-        </CartProvider>
-    </AuthProvider>
+    <CartProvider>
+        <RouterProvider router={AppRouter} />
+    </CartProvider>
 );

@@ -1,26 +1,76 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
 
 const Login = () => {
 
   const [email,setEmail] = useState("");
   const [password,setPassword] = useState("");
+  const [error,setError] = useState("");
+  const [showPassword,setShowPassword] = useState(false);
+  const [loading,setLoading] = useState(false);
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleLogin = async () => {
 
-    const success = login(email,password);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if(success){
-    //   alert("Login successful");
-      navigate("/");
-    }else{
-      alert("Invalid credentials");
+    if(!email || !password){
+      setError("Please fill all fields");
+      return;
     }
+
+    if(!emailRegex.test(email)){
+      setError("Enter a valid email address");
+      return;
+    }
+
+    try{
+
+      setLoading(true);
+
+      const res = await fetch("http://localhost:5000/login",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          email,
+          password
+        })
+      });
+
+      const data = await res.json();
+
+      if(data.message !== "Login success"){
+        setError(data.message);
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem("user",JSON.stringify(data.user));
+
+      navigate("/");
+      window.location.reload();
+
+    }catch(err){
+
+      setError("Server error. Try again later.");
+
+    }finally{
+
+      setLoading(false);
+
+    }
+
+  };
+
+  const handleGoogleLogin = () => {
+    window.open("https://accounts.google.com/signin","_blank");
+  };
+
+  const handleFacebookLogin = () => {
+    window.open("https://www.facebook.com/login","_blank");
   };
 
   return (
@@ -29,37 +79,87 @@ const Login = () => {
       <div className="login-card">
 
         <div className="login-header">
-          <h2>Welcome Back!</h2>
+          <h1>Welcome Back!</h1>
+          <p>Sign in to continue ordering delicious food</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <div className="login-body">
 
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-          />
+          <label>Email Address</label>
+
+          <div className="input-box">
+            <i className="ri-mail-line icon"></i>
+
+            <input
+              type="email"
+              placeholder="john@example.com"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+            />
+          </div>
 
           <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-          />
 
-          <button className="signin-btn">
-            Sign In
+          <div className="input-box">
+
+            <i className="ri-lock-line icon"></i>
+
+            <input
+              type={showPassword ? "text":"password"}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+            />
+
+            <i
+              className={`eye ri-${showPassword ? "eye-off-line":"eye-line"}`}
+              onClick={()=>setShowPassword(!showPassword)}
+            ></i>
+
+          </div>
+
+          {error && <p className="error">{error}</p>}
+
+          <div className="login-options">
+            <label>
+              <input type="checkbox"/> Remember me
+            </label>
+
+            <span className="forgot">Forgot Password?</span>
+          </div>
+
+          <button className="login-btn" onClick={handleLogin}>
+            {loading ? "Signing In..." : "Sign In"}
           </button>
 
-          <p className="signup-text">
+          <div className="divider">
+            <span>OR</span>
+          </div>
+
+          <button className="social-btn google" onClick={handleGoogleLogin}>
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"/>
+            Continue with Google
+          </button>
+
+          <button className="social-btn facebook" onClick={handleFacebookLogin}>
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png"/>
+            Continue with Facebook
+          </button>
+
+          <p className="signup">
             Don't have an account?
             <span onClick={()=>navigate("/signup")}> Sign Up</span>
           </p>
 
-        </form>
+        </div>
 
       </div>
+
+      <p className="terms">
+        By continuing, you agree to our
+        <b> Terms of Service </b> and
+        <b> Privacy Policy</b>
+      </p>
 
     </div>
   );

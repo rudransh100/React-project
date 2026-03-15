@@ -1,68 +1,85 @@
-import {LOGO_URL} from "../utils/content";
-import {useState} from "react";
-import {Link} from "react-router-dom";
-import {useCart} from "../utils/CartContext";
-import {FaShoppingCart, FaUser} from "react-icons/fa";
-import {useNavigate} from "react-router-dom";
-import {useAuth} from "../utils/AuthContext";
 
-const Heading = () => {
-    const [btnNameReact, setbtnNameReact] = useState("Login");
-    const navigate = useNavigate();
-    const {cart} = useCart();
-    const {user, logout} = useAuth();
-    const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
+import { LOGO_URL } from "../utils/content";
+import { useContext, useState, useEffect } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import {CartContext} from "../utils/CartContext.js";
 
-    return (
-        <div className="header">
-            <div className="logo-container">
-                <Link to="/">
-                    <img className="logo" src={LOGO_URL} />
-                </Link>
-            </div>
+const Header = () => {
+  const { cart } = useContext(CartContext);
+  const navigate = useNavigate();
 
-            <div className="nav-items">
-                <ul>
-                    <li>
-                        <Link to="/" className="nav-btn">
-                            Home
-                        </Link>
-                    </li>
+  const [user, setUser] = useState(null);
 
-                    <li>
-                        <Link to="/about" className="nav-btn">
-                            About us
-                        </Link>
-                    </li>
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+  }, []);
 
-                    <li>
-                        <Link to="/contact" className="nav-btn">
-                            Contact us
-                        </Link>
-                    </li>
+  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
 
-                    <li className="cart-icon">
-                        <Link to="/cart">
-                            <FaShoppingCart size={22} />
-                            {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
-                        </Link>
-                    </li>
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/login");
+  };
 
-                    <li>
-                        {user ? (
-                            <button className="login-btn" onClick={logout}>
-                                Logout
-                            </button>
-                        ) : (
-                            <button className="login-btn" onClick={() => navigate("/login")}>
-                                Login
-                            </button>
-                        )}
-                    </li>
-                </ul>
-            </div>
-        </div>
-    );
+  /* Get initials */
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+    : user?.email?.[0]?.toUpperCase();
+
+  return (
+    <div className="header">
+      {/* LOGO */}
+      <div className="logo-section">
+        <Link to="/">
+          <img className="logo" src={LOGO_URL} alt="logo" />
+        </Link>
+      </div>
+
+      {/* NAVIGATION */}
+      <div className="nav-items">
+        <NavLink to="/" className="nav-link">
+          Home
+        </NavLink>
+
+        <NavLink to="/about" className="nav-link">
+          About us
+        </NavLink>
+
+        <NavLink to="/contact" className="nav-link">
+          Contact us
+        </NavLink>
+
+        {/* CART */}
+        <Link className="cart-icon" to="/cart">
+          🛒
+          {totalItems > 0 && (
+            <span className="cart-count">{totalItems}</span>
+          )}
+        </Link>
+
+        {/* PROFILE / LOGIN */}
+        {user ? (
+          <div className="profile-section">
+            <div className="avatar">{initials}</div>
+
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <NavLink to="/login" className="nav-link">
+            Login
+          </NavLink>
+        )}
+      </div>
+    </div>
+  );
 };
 
-export default Heading;
+export default Header;

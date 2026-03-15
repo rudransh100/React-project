@@ -1,28 +1,81 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
-import Login from "./Login";
 
-const Signup = () => {
+const SignUp = () => {
 
+  const [name,setName] = useState("");
   const [email,setEmail] = useState("");
   const [password,setPassword] = useState("");
+  const [showPassword,setShowPassword] = useState(false);
+  const [error,setError] = useState("");
+  const [loading,setLoading] = useState(false);
 
-  const { signup, login } = useAuth();
   const navigate = useNavigate();
 
- const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSignup = async () => {
 
-  signup(email, password);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // auto login
-  login(email, password);
+    // strong password
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
-  alert("Account created successfully!");
+    if(!name || !email || !password){
+      setError("Please fill all fields");
+      return;
+    }
 
-  navigate("/");
-};
+    if(!emailRegex.test(email)){
+      setError("Enter a valid email address");
+      return;
+    }
+
+    if(!passwordRegex.test(password)){
+      setError(
+        "Password must contain 8+ characters, uppercase, lowercase, number and special symbol"
+      );
+      return;
+    }
+
+    try{
+
+      setLoading(true);
+
+      const res = await fetch("http://localhost:5000/signup",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          name,
+          email,
+          password
+        })
+      });
+
+      const data = await res.json();
+
+      if(data.message === "User already exists"){
+        setError("User already exists");
+        setLoading(false);
+        return;
+      }
+
+      alert("Account created successfully");
+
+      navigate("/login");
+
+    }catch(err){
+
+      setError("Server error. Try again later.");
+
+    }finally{
+
+      setLoading(false);
+
+    }
+
+  };
 
   return (
     <div className="login-page">
@@ -30,30 +83,70 @@ const Signup = () => {
       <div className="login-card">
 
         <div className="login-header">
-          <h2>Create Account</h2>
+          <h1>Create Account</h1>
+          <p>Join us and start ordering delicious food</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <div className="login-body">
 
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-          />
+          <label>Full Name</label>
+
+          <div className="input-box">
+            <i className="ri-user-line icon"></i>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e)=>setName(e.target.value)}
+            />
+          </div>
+
+          <label>Email Address</label>
+
+          <div className="input-box">
+            <i className="ri-mail-line icon"></i>
+            <input
+              type="email"
+              placeholder="john@example.com"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+            />
+          </div>
 
           <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-          />
 
-          <button className="signin-btn">
-            Sign Up
+          <div className="input-box">
+
+            <i className="ri-lock-line icon"></i>
+
+            <input
+              type={showPassword ? "text":"password"}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+            />
+
+            <i
+              className={`eye ri-${showPassword ? "eye-off-line":"eye-line"}`}
+              onClick={()=>setShowPassword(!showPassword)}
+            ></i>
+
+          </div>
+
+          {error && <p className="error">{error}</p>}
+
+          <button className="login-btn" onClick={handleSignup}>
+
+            {loading ? "Creating..." : "Sign Up"}
+
           </button>
 
-        </form>
+          <p className="signup">
+            Already have an account? 
+            <span onClick={()=>navigate("/login")}> Sign In</span>
+          </p>
+
+        </div>
 
       </div>
 
@@ -61,4 +154,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;
