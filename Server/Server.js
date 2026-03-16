@@ -7,9 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* CONNECT MONGODB */
 
-mongoose.connect("mongodb://127.0.0.1:27017/Food-app")
+mongoose.connect("mongodb://127.0.0.1:27017/Foodapp")
 .then(()=>console.log("MongoDB connected"))
 .catch(err=>console.log(err));
 
