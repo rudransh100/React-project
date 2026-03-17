@@ -28,6 +28,7 @@ const Login = () => {
     try{
 
       setLoading(true);
+      setError("");
 
       const res = await fetch("https://react-project-iwih.onrender.com/login",{
         method:"POST",
@@ -40,27 +41,27 @@ const Login = () => {
         })
       });
 
+      // handle server not responding
+      if(!res.ok){
+        throw new Error("Server error");
+      }
+
       const data = await res.json();
 
       if(data.message !== "Login success"){
         setError(data.message);
-        setLoading(false);
         return;
       }
 
+      // save user
       localStorage.setItem("user",JSON.stringify(data.user));
 
       navigate("/");
-      window.location.reload();
 
     }catch(err){
-
-      setError("Server error. Try again later.");
-
+      setError("Server is waking up... please try again in a few seconds");
     }finally{
-
       setLoading(false);
-
     }
 
   };
@@ -128,8 +129,12 @@ const Login = () => {
             <span className="forgot">Forgot Password?</span>
           </div>
 
-          <button className="login-btn" onClick={handleLogin}>
-            {loading ? "Signing In..." : "Sign In"}
+          <button
+            className="login-btn"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Connecting..." : "Sign In"}
           </button>
 
           <div className="divider">

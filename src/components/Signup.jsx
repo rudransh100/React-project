@@ -16,7 +16,6 @@ const SignUp = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // strong password
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
 
@@ -40,8 +39,9 @@ const SignUp = () => {
     try{
 
       setLoading(true);
+      setError("");
 
-      const res = await fetch("http://localhost:5000/signup",{
+      const res = await fetch("https://react-project-iwih.onrender.com/signup",{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
@@ -53,26 +53,27 @@ const SignUp = () => {
         })
       });
 
+      // handle server issues
+      if(!res.ok){
+        throw new Error("Server error");
+      }
+
       const data = await res.json();
 
       if(data.message === "User already exists"){
         setError("User already exists");
-        setLoading(false);
         return;
       }
 
-      alert("Account created successfully");
+      // success
+      alert("Account created successfully 🎉");
 
       navigate("/login");
 
     }catch(err){
-
-      setError("Server error. Try again later.");
-
+      setError("Server is waking up... please try again in a few seconds");
     }finally{
-
       setLoading(false);
-
     }
 
   };
@@ -135,10 +136,12 @@ const SignUp = () => {
 
           {error && <p className="error">{error}</p>}
 
-          <button className="login-btn" onClick={handleSignup}>
-
-            {loading ? "Creating..." : "Sign Up"}
-
+          <button
+            className="login-btn"
+            onClick={handleSignup}
+            disabled={loading}
+          >
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
 
           <p className="signup">
