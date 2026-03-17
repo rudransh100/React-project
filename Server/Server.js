@@ -9,65 +9,83 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* HEALTH CHECK */
+/* ✅ HEALTH CHECK */
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
 
-/* CONNECT MONGODB */
-mongoose.connect(process.env.MONGO_URI)
-  .then(()=>console.log("MongoDB connected"))
-  .catch(err=>console.log(err));
-
-/* USER SCHEMA */
-const userSchema = new mongoose.Schema({
-  name:String,
-  email:String,
-  password:String
+/* ✅ OPTIONAL: avoid 'Cannot GET /signup' in browser */
+app.get("/signup", (req, res) => {
+  res.send("Use POST request to signup");
 });
 
-const User = mongoose.model("User",userSchema);
+app.get("/login", (req, res) => {
+  res.send("Use POST request to login");
+});
 
-/* SIGNUP */
-app.post("/signup", async (req,res)=>{
-  try{
-    const {name,email,password} = req.body;
+/* 🔗 CONNECT MONGODB */
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.log("Mongo Error:", err));
 
-    const existingUser = await User.findOne({email});
+/* 👤 USER SCHEMA */
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String
+});
 
-    if(existingUser){
-      return res.json({message:"User already exists"});
+const User = mongoose.model("User", userSchema);
+
+/* 🟢 SIGNUP API */
+app.post("/signup", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.json({ message: "User already exists" });
     }
 
-    const user = new User({name,email,password});
+    const user = new User({ name, email, password });
     await user.save();
 
-    res.json({message:"Signup successful"});
+    res.json({ message: "Signup successful" });
 
-  }catch(err){
+  } catch (err) {
     console.error(err);
-    res.status(500).json({message:"Server error"});
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-/* LOGIN */
-app.post("/login", async (req,res)=>{
-  const {email,password} = req.body;
+/* 🔵 LOGIN API */
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({email});
+    const user = await User.findOne({ email });
 
-  if(!user){
-    return res.json({message:"User not found"});
+    if (!user) {
+      return res.json({ message: "User not found" });
+    }
+
+    if (user.password !== password) {
+      return res.json({ message: "Wrong password" });
+    }
+
+    res.json({
+      message: "Login success",
+      user
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  if(user.password !== password){
-    return res.json({message:"Wrong password"});
-  }
-
-  res.json({message:"Login success", user});
 });
 
-/* SERVER */
+/* 🚀 SERVER */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
