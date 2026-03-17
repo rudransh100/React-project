@@ -1,4 +1,3 @@
-
 import { LOGO_URL } from "../utils/content";
 import { useContext, useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
